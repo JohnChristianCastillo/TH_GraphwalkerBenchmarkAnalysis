@@ -25,10 +25,10 @@ class BenchmarkPlotter:
                 'Minimum Size': BenchmarkPlotter.plot_minimum_size, 'Maximum Size': BenchmarkPlotter.plot_maximum_size,
                 'Max-Min Size': BenchmarkPlotter.plot_max_minus_min_size,
                 'Coverage vs Time': BenchmarkPlotter.plot_coverage_vs_time,
-                'Size/Time': BenchmarkPlotter.plot_average_size_divided_by_average_time}
+                'Size over Time': BenchmarkPlotter.plot_average_size_divided_by_average_time}
 
     @staticmethod
-    def create_plots(grouped_generators: dict[str, list[BenchmarkGenerator]], show: bool = True) -> dict[str, BytesIO]:
+    def create_plots(grouped_generators: dict[str, list[BenchmarkGenerator]], show: bool = False) -> dict[str, BytesIO]:
         """
         Plot the benchmark results
 
