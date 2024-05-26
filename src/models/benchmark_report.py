@@ -1,5 +1,6 @@
 import json
 
+from models.model import Model
 from src.models.benchmark_generator import BenchmarkGenerator
 
 
@@ -57,6 +58,13 @@ class BenchmarkReport(dict):
                 generators[generator.generator] = []
             generators[generator.generator].append(generator)
         return generators
+
+    @property
+    def model(self) -> Model:
+        """
+        Get a benchmark's model.
+        """
+        return Model(self["Model"])
 
     @property
     def name(self) -> str:
