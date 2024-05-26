@@ -30,6 +30,15 @@ class BenchmarkGenerator(dict):
         return self.name[start + 1:end]
 
     @property
+    def stop_coverage(self) -> int:
+        """
+        Get the stop condition's coverage.
+        """
+        start = self.stop_condition.lower().find("coverage(")
+        end = self.stop_condition.find(")")
+        return int(self.stop_condition[start + 9:end])
+
+    @property
     def total_generation_time(self) -> int:
         """
         Get the total generation time.
