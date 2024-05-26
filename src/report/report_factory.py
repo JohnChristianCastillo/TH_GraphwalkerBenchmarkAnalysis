@@ -90,24 +90,14 @@ class ReportFactory:
 
             f.write(f"<h1>GraphWalker Benchmark Report: {benchmark.name}</h1>\n")
 
+            f.write(f"<h2>Model information</h2>\n")
+            f.write(f"<p>Model Name: {benchmark.report.model.name}</p>\n")
+            f.write(f"<p>Model Id: {benchmark.report.model.id}</p>\n")
+            f.write(f"<p>Model path: {benchmark.report.model_path}</p>\n")
+            f.write(f"<p>Model size: {benchmark.report.model.vertices} vertices, {benchmark.report.model.edges} edges</p>\n")
+
             f.write('<h2>Statistics</h2>\n')
             f.write('<table>\n')
-
-            #
-            #   Statistics are first grouped by statistic type, then grouped by generator name, and then by stop coverage, to then result in a value.
-            #
-            #   Example table:
-            #
-            #   | Statistic | Generator | Stop Coverage | Value |
-            #   |-----------|-----------|---------------|-------|
-            #   | Statistic 1 | Generator 1 | 100 | 123 |
-            #   | Statistic 1 | Generator 1 | 90 | 456 |
-            #   | Statistic 1 | Generator 2 | 100 | 789 |
-            #   | Statistic 1 | Generator 2 | 90 | 1011 |
-            #   | Statistic 2 | Generator 1 | 100 | 1213 |
-            #
-
-            # We will group them by one table per statistic
 
             for statistic_name, statistics in statistics.items():
                 f.write(f"<h3>{statistic_name}</h3>\n")
