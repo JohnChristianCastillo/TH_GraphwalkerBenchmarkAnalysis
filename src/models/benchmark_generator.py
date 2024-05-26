@@ -94,6 +94,90 @@ class BenchmarkGenerator(dict):
         """
         return self["MaxTestSuiteSize"]
 
+    @property
+    def total_vertex_visits(self) -> int:
+        """
+        Get the total vertex visits.
+        """
+        return self["TotalVertexVisits"]
+
+    @property
+    def total_edges_visits(self) -> int:
+        """
+        Get the total edges visits.
+        """
+        return self["TotalEdgesVisits"]
+
+    @property
+    def average_vertex_visits(self) -> int:
+        """
+        Get the average vertex visits.
+        """
+        return self["AverageVertexVisits"]
+
+    @property
+    def average_edges_visits(self) -> int:
+        """
+        Get the average edges visits.
+        """
+        return self["AverageEdgesVisits"]
+
+    @property
+    def total_unvisited_vertices(self) -> int:
+        """
+        Get the total unvisited vertices.
+        """
+        return self["TotalUnvisitedVertices"]
+
+    @property
+    def average_unvisited_vertices(self) -> int:
+        """
+        Get the average unvisited vertices.
+        """
+        return self["AverageUnvisitedVertices"]
+
+    @property
+    def total_unvisited_edges(self) -> int:
+        """
+        Get the total unvisited edges.
+        """
+        return self["TotalUnvisitedEdges"]
+
+    @property
+    def average_unvisited_edges(self) -> int:
+        """
+        Get the average unvisited edges.
+        """
+        return self["AverageUnvisitedEdges"]
+
+    @property
+    def total_vertex_visits_individual(self) -> dict[str, int]:
+        """
+        Get the total vertex visits by individual vertex.
+        """
+        return self["TotalVertexVisitsIndividual"]
+
+    @property
+    def total_edges_visits_individual(self) -> dict[str, int]:
+        """
+        Get the total edges visits by individual edge.
+        """
+        return self["TotalEdgesVisitsIndividual"]
+
+    @property
+    def average_vertex_visits_individual(self) -> dict[str, int]:
+        """
+        Get the average vertex visits by individual vertex.
+        """
+        return self["AverageVertexVisitsIndividual"]
+
+    @property
+    def average_edges_visits_individual(self) -> dict[str, int]:
+        """
+        Get the average edges visits by individual edge.
+        """
+        return self["AverageEdgesVisitsIndividual"]
+
     def __str__(self):
         """
         Return the string representation.
