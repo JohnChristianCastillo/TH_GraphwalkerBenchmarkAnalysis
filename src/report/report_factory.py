@@ -96,6 +96,19 @@ class ReportFactory:
             f.write(f"<p>Model path: {benchmark.report.model_path}</p>\n")
             f.write(f"<p>Model size: {benchmark.report.model.vertices} vertices, {benchmark.report.model.edges} edges</p>\n")
 
+            f.write(f"<h2>Path Generators</h2>\n")
+            f.write('<table>\n')
+            f.write('<tr>\n')
+            f.write('<th>Generator</th>\n')
+            f.write('<th>Stop Conditions</th>\n')
+            f.write('</tr>\n')
+
+            for generator in benchmark.report.generators_sorted:
+                f.write('<tr>\n')
+                f.write(f'<td>{generator.generator}</td>\n')
+                f.write(f'<td>{generator.stop_condition}</td>\n')
+                f.write('</tr>\n')
+
             f.write('<h2>Statistics</h2>\n')
             f.write('<table>\n')
 
