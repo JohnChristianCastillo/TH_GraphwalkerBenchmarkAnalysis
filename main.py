@@ -10,6 +10,8 @@ if __name__ == '__main__':
         description='Create benchmark plots & human-readable reports from GraphWalker benchmark output.')
     parser.add_argument('--benchmark', '-b', type=str, help='Path to the benchmark directory.', required=True)
     parser.add_argument('--output', '-o', type=str, help='Path to the output directory. Default \".\"', default='.')
+    parser.add_argument('--whitelist', nargs='+', help='Whitelist of generators to include in the report.')
+    parser.add_argument('--blacklist', nargs='+', help='Blacklist of generators to exclude from the report.')
     parser.add_argument('--verbose', '-v', action='store_true', help='Print verbose output.')
     args = parser.parse_args()
 
@@ -25,7 +27,7 @@ if __name__ == '__main__':
     if args.verbose:
         print(f'Loaded benchmark \"{benchmark}\" with {len(benchmark.report.generators)} generators.')
 
-    plots = BenchmarkPlotter.plot_benchmark(benchmark, show=True)
+    plots = BenchmarkPlotter.plot_benchmark(benchmark, show=True, blacklist=args.blacklist, whitelist=args.whitelist)
 
     output = Path(args.output)
     output = output / benchmark.name
