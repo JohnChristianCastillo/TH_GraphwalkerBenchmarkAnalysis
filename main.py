@@ -12,7 +12,7 @@ if __name__ == '__main__':
     parser.add_argument('--output_suffix', '-s', type=str, help='Suffix to append to the output directory name.')
     parser.add_argument('--report_type', '-r', type=str,
                         help='Type of report to generate. Default \"html\". Options: html, pdf, raw_data\nNote that pdf requires playwright to be installed. (\'playwright install\', using an activated python environment with playwright)',
-                        default='pdf')
+                        default='html')
     parser.add_argument('--whitelist', nargs='+', help='Whitelist of generators to include in the report.')
     parser.add_argument('--blacklist', nargs='+', help='Blacklist of generators to exclude from the report.')
     parser.add_argument('--verbose', '-v', action='store_true', help='Print verbose output.')
