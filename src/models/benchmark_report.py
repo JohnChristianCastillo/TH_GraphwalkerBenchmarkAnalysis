@@ -26,7 +26,7 @@ class BenchmarkReport(dict):
     @property
     def generators(self) -> list[BenchmarkGenerator]:
         """
-        Get the generators' dictionary.
+        Get the generator results.
         """
         generators = []
         for generator in self["Generators"].keys():
@@ -36,11 +36,23 @@ class BenchmarkReport(dict):
     @property
     def generators_sorted(self) -> list[BenchmarkGenerator]:
         """
-        Get the generators' dictionary sorted by name.
+        Get the generator results sorted by name.
         """
         generators = []
         for generator in sorted(self["Generators"].keys()):
             generators.append(BenchmarkGenerator(self["Generators"][generator], generator))
+        return generators
+
+    @property
+    def generators_grouped(self) -> dict[str, list[BenchmarkGenerator]]:
+        """
+        Get the generator results grouped by generator name.
+        """
+        generators = {}
+        for generator in self.generators_sorted:
+            if generator.generator not in generators:
+                generators[generator.generator] = []
+            generators[generator.generator].append(generator)
         return generators
 
     @property
