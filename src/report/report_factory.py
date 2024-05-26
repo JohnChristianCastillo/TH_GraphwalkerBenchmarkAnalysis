@@ -92,12 +92,45 @@ class ReportFactory:
 
             f.write('<h2>Statistics</h2>\n')
             f.write('<table>\n')
-            f.write('<tr><th>Statistic</th><th>Value</th></tr>\n')
-            # TODO
-            f.write('</table>\n')
+
+            #
+            #   Statistics are first grouped by statistic type, then grouped by generator name, and then by stop coverage, to then result in a value.
+            #
+            #   Example table:
+            #
+            #   | Statistic | Generator | Stop Coverage | Value |
+            #   |-----------|-----------|---------------|-------|
+            #   | Statistic 1 | Generator 1 | 100 | 123 |
+            #   | Statistic 1 | Generator 1 | 90 | 456 |
+            #   | Statistic 1 | Generator 2 | 100 | 789 |
+            #   | Statistic 1 | Generator 2 | 90 | 1011 |
+            #   | Statistic 2 | Generator 1 | 100 | 1213 |
+            #
+
+            # We will group them by one table per statistic
+
+            for statistic_name, statistics in statistics.items():
+                f.write(f"<h3>{statistic_name}</h3>\n")
+                f.write('<table>\n')
+                f.write('<tr>\n')
+                f.write('<th>Generator</th>\n')
+                f.write('<th>Stop Coverage</th>\n')
+                f.write('<th>Value</th>\n')
+                f.write('</tr>\n')
+
+                for generator_name, generator_statistics in statistics.items():
+                    for stop_coverage, value in generator_statistics.items():
+                        f.write('<tr>\n')
+                        f.write(f'<td>{generator_name}</td>\n')
+                        f.write(f'<td>{stop_coverage}</td>\n')
+                        f.write(f'<td>{round(value, 2)}</td>\n')
+                        f.write('</tr>\n')
+
+                f.write('</table>\n')
 
             f.write('<h2>Plots</h2>\n')
             for name in plots.keys():
+                f.write(f'<h3>{name}</h3>\n')
                 f.write(f'<img src="images/{name}.png" alt="{name}">\n')
 
             f.write('</body>\n')
