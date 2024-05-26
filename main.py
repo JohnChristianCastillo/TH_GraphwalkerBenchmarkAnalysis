@@ -27,7 +27,7 @@ if __name__ == '__main__':
     if args.verbose:
         print(f'Loaded benchmark \"{benchmark}\" with {len(benchmark.report.generators)} generators.')
 
-    plots = BenchmarkPlotter.plot_benchmark(benchmark, show=True, blacklist=args.blacklist, whitelist=args.whitelist)
+    plots = BenchmarkPlotter.create_plots(benchmark, show=True, blacklist=args.blacklist, whitelist=args.whitelist)
 
     output = Path(args.output)
     output = output / benchmark.name

@@ -17,7 +17,7 @@ class BenchmarkPlotter:
         """
         Get the available plot functions
 
-        :return: dict[str, Callable[[Benchmark], BytesIO]: The available plot functions
+        :return: a dictionary with the available plot functions
         """
         return {
             'Total Time': BenchmarkPlotter.plot_total_time,
@@ -34,14 +34,14 @@ class BenchmarkPlotter:
         }
 
     @staticmethod
-    def plot_benchmark(benchmark: Benchmark, whitelist: list[str] = None, blacklist: list[str] = None, show: bool = True) -> dict[str, BytesIO]:
+    def create_plots(benchmark: Benchmark, whitelist: list[str] = None, blacklist: list[str] = None, show: bool = True) -> dict[str, BytesIO]:
         """
         Plot the benchmark results
 
-        :param benchmark: Benchmark: The benchmark to plot
-        :param whitelist: list[str]: The list of plot functions to include, if None, all are included
-        :param blacklist: list[str]: The list of plot functions to exclude, if None, none are excluded
-        :param show: bool: Whether to show the plot
+        :param benchmark: The benchmark to plot
+        :param whitelist: The list of generators to include, if None, all are included
+        :param blacklist: The list of generators to exclude, if None, none are excluded
+        :param show: bool: Whether to show the plots
         """
         plt.close()
         plots: dict[str, BytesIO] = {}
