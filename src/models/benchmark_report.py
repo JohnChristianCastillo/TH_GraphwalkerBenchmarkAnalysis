@@ -128,6 +128,20 @@ class BenchmarkReport(dict):
         """
         return self["KillAfter"]
 
+    @property
+    def timestamp(self) -> str:
+        """
+        Get the timestamp.
+        """
+        return self["Timestamp"]
+
+    @property
+    def median_runs(self) -> int:
+        """
+        Get the number of runs to calculate the median.
+        """
+        return self["MedianRuns"]
+
     def __str__(self) -> str:
         """
         Get the string representation.

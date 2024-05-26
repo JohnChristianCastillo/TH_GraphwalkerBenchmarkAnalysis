@@ -3,6 +3,8 @@ from pathlib import Path
 from src.models.benchmark import Benchmark
 import argparse
 
+from src.plotters.benchmark_plotter import BenchmarkPlotter
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Create benchmark plots & human-readable reports from GraphWalker benchmark output.')
@@ -22,6 +24,8 @@ if __name__ == '__main__':
     benchmark = Benchmark.from_dir(str(input_path.absolute()))
     if args.verbose:
         print(f'Loaded benchmark \"{benchmark}\" with {len(benchmark.report.generators)} generators.')
+
+    plots = BenchmarkPlotter.plot_benchmark(benchmark, show=True)
 
     output = Path(args.output)
     output = output / benchmark.name
