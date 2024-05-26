@@ -5,13 +5,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from models.benchmark_generator import BenchmarkGenerator
-from src.models.benchmark import Benchmark
 
 
 class BenchmarkPlotter:
     """
     A class used to plot the benchmark results
     """
+
     @staticmethod
     def get_plot_functions() -> dict[str, Callable[[dict[str, list[BenchmarkGenerator]]], None]]:
         """
@@ -19,39 +19,24 @@ class BenchmarkPlotter:
 
         :return: a dictionary with the available plot functions
         """
-        return {
-            'Total Time': BenchmarkPlotter.plot_total_time,
-            'Total Size': BenchmarkPlotter.plot_total_size,
-            'Average Time': BenchmarkPlotter.plot_average_time,
-            'Average Size': BenchmarkPlotter.plot_average_size,
-            'Minimum Time': BenchmarkPlotter.plot_minimum_time,
-            'Maximum Time': BenchmarkPlotter.plot_maximum_time,
-            'Minimum Size': BenchmarkPlotter.plot_minimum_size,
-            'Maximum Size': BenchmarkPlotter.plot_maximum_size,
-            'Max-Min Size': BenchmarkPlotter.plot_max_minus_min_size,
-            'Coverage vs Time': BenchmarkPlotter.plot_coverage_vs_time,
-            'Size/Time': BenchmarkPlotter.plot_average_size_divided_by_average_time
-        }
+        return {'Total Time': BenchmarkPlotter.plot_total_time, 'Total Size': BenchmarkPlotter.plot_total_size,
+                'Average Time': BenchmarkPlotter.plot_average_time, 'Average Size': BenchmarkPlotter.plot_average_size,
+                'Minimum Time': BenchmarkPlotter.plot_minimum_time, 'Maximum Time': BenchmarkPlotter.plot_maximum_time,
+                'Minimum Size': BenchmarkPlotter.plot_minimum_size, 'Maximum Size': BenchmarkPlotter.plot_maximum_size,
+                'Max-Min Size': BenchmarkPlotter.plot_max_minus_min_size,
+                'Coverage vs Time': BenchmarkPlotter.plot_coverage_vs_time,
+                'Size/Time': BenchmarkPlotter.plot_average_size_divided_by_average_time}
 
     @staticmethod
-    def create_plots(benchmark: Benchmark, whitelist: list[str] = None, blacklist: list[str] = None, show: bool = True) -> dict[str, BytesIO]:
+    def create_plots(grouped_generators: dict[str, list[BenchmarkGenerator]], show: bool = True) -> dict[str, BytesIO]:
         """
         Plot the benchmark results
 
-        :param benchmark: The benchmark to plot
-        :param whitelist: The list of generators to include, if None, all are included
-        :param blacklist: The list of generators to exclude, if None, none are excluded
+        :param grouped_generators: The generator benchmarks to plot, grouped by generator name
         :param show: bool: Whether to show the plots
         """
         plt.close()
         plots: dict[str, BytesIO] = {}
-
-        grouped_generators = benchmark.report.generators_grouped
-        if whitelist:
-            grouped_generators = {key: value for key, value in grouped_generators.items() if key.lower() in [x.lower() for x in whitelist]}
-
-        if blacklist:
-            grouped_generators = {key: value for key, value in grouped_generators.items() if key.lower() not in [x.lower() for x in blacklist]}
 
         for plot_function_name, plot_function in BenchmarkPlotter.get_plot_functions().items():
             plt.close()
@@ -69,7 +54,8 @@ class BenchmarkPlotter:
         plt.tight_layout()
 
     @staticmethod
-    def _plot_bars(fig, ax, grouped_generators: dict[str, list[BenchmarkGenerator]], value_lambda: Callable[[BenchmarkGenerator], int], add_trend_line: bool = True):
+    def _plot_bars(fig, ax, grouped_generators: dict[str, list[BenchmarkGenerator]],
+                   value_lambda: Callable[[BenchmarkGenerator], int], add_trend_line: bool = True):
         """
         Plot results for a list of benchmark generators
         :param fig: The figure to plot on
@@ -85,8 +71,7 @@ class BenchmarkPlotter:
         for i, generator_group in enumerate(grouped_generators):
             coverage_values = [generator.stop_coverage + i * bar_width for generator in
                                grouped_generators[generator_group]]
-            property_values = [value_lambda(generator) for generator in
-                               grouped_generators[generator_group]]
+            property_values = [value_lambda(generator) for generator in grouped_generators[generator_group]]
 
             ax.bar(coverage_values, property_values, label=generator_group, width=bar_width, align='center')
 
@@ -98,7 +83,8 @@ class BenchmarkPlotter:
         BenchmarkPlotter._post_process_plot(fig, ax)
 
     @staticmethod
-    def _plot_lines(fig, ax, grouped_generators: dict[str, list[BenchmarkGenerator]], value_lambda: Callable[[BenchmarkGenerator], int]):
+    def _plot_lines(fig, ax, grouped_generators: dict[str, list[BenchmarkGenerator]],
+                    value_lambda: Callable[[BenchmarkGenerator], int]):
         """
         Plot results for a list of benchmark generators
         :param fig: The figure to plot on
@@ -248,7 +234,8 @@ class BenchmarkPlotter:
         ax.set_xlabel('Coverage (%)')
         ax.set_ylabel('Difference (element count)')
 
-        BenchmarkPlotter._plot_bars(fig, ax, grouped_generators, lambda generator: generator.max_test_suite_size - generator.min_test_suite_size)
+        BenchmarkPlotter._plot_bars(fig, ax, grouped_generators,
+                                    lambda generator: generator.max_test_suite_size - generator.min_test_suite_size)
 
     @staticmethod
     def plot_coverage_vs_time(grouped_generators: dict[str, list[BenchmarkGenerator]]):
@@ -280,7 +267,8 @@ class BenchmarkPlotter:
         ax.set_xlabel('Coverage (%)')
         ax.set_ylabel('Size/Time (element count/μs)')
 
-        BenchmarkPlotter._plot_bars(fig, ax, grouped_generators, lambda generator: generator.average_test_suite_size / generator.average_generation_time)
+        BenchmarkPlotter._plot_bars(fig, ax, grouped_generators, lambda
+            generator: generator.average_test_suite_size / generator.average_generation_time)
 
     @staticmethod
     def save_plot(output: str):

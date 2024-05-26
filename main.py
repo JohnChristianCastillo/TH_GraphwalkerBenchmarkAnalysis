@@ -1,8 +1,7 @@
+import argparse
 from pathlib import Path
 
 from src.models.benchmark import Benchmark
-import argparse
-
 from src.plotters.benchmark_plotter import BenchmarkPlotter
 
 if __name__ == '__main__':
@@ -27,7 +26,16 @@ if __name__ == '__main__':
     if args.verbose:
         print(f'Loaded benchmark \"{benchmark}\" with {len(benchmark.report.generators)} generators.')
 
-    plots = BenchmarkPlotter.create_plots(benchmark, show=True, blacklist=args.blacklist, whitelist=args.whitelist)
+    grouped_generators = benchmark.report.generators_grouped
+    if args.whitelist:
+        grouped_generators = {key: value for key, value in grouped_generators.items() if
+                              key.lower() in [x.lower() for x in args.whitelist]}
+
+    if args.blacklist:
+        grouped_generators = {key: value for key, value in grouped_generators.items() if
+                              key.lower() not in [x.lower() for x in args.blacklist]}
+
+    plots = BenchmarkPlotter.create_plots(grouped_generators, show=True)
 
     output = Path(args.output)
     output = output / benchmark.name
