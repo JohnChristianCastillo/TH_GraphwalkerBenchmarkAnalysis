@@ -38,10 +38,13 @@ class BenchmarkReport(dict):
         """
         Get the generator results sorted by name.
         """
-        generators = []
-        for generator in sorted(self["Generators"].keys()):
-            generators.append(BenchmarkGenerator(self["Generators"][generator], generator))
+        generators = self.generators
+        generators.sort(key=BenchmarkReport.generator_sort_lambda)
         return generators
+
+    @staticmethod
+    def generator_sort_lambda(generator: BenchmarkGenerator):
+        return generator.generator, generator.stop_coverage
 
     @property
     def generators_grouped(self) -> dict[str, list[BenchmarkGenerator]]:
