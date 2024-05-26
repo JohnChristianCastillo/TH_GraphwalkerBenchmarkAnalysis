@@ -1,5 +1,5 @@
-from pathlib import Path
 import json
+from pathlib import Path
 
 from src.models.benchmark_report import BenchmarkReport
 
@@ -44,7 +44,29 @@ class Benchmark:
         with report_path.open() as f:
             report = BenchmarkReport(json.load(f), path.name)
 
-        runs = {}  # TODO: Load runs
+        runs_path = path / "runs"
+        if not runs_path.exists():
+            raise FileNotFoundError(f"{runs_path} does not exist.")
+
+        runs = {}
+        # E.g. a folder "DirectedChinesePostmanPath(EdgeCoverage(80))" with run_0_path.json and run_0_report.json, etc... for run_1, run_2, etc...
+        for generator_folder in runs_path.iterdir():
+            if not generator_folder.is_dir():
+                continue
+
+            runs[generator_folder.name] = []
+            for run_file in generator_folder.iterdir():
+                if not run_file.is_file():
+                    continue
+
+                if run_file.name.endswith("_report.json"):
+                    with run_file.open() as f:
+                        # TODO: Create RunReport class
+                        pass
+                elif run_file.name.endswith("_path.json"):
+                    with run_file.open() as f:
+                        # TODO: Create RunPath class
+                        pass
 
         return cls(report, runs)
 
