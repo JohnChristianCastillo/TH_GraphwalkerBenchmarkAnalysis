@@ -47,11 +47,11 @@ class BenchmarkPlotter:
         plt.close()
 
     @staticmethod
-    def plot_property(fig, ax, benchmark: Benchmark, property_name: str):
+    def _plot_benchmark(fig, ax, benchmark: Benchmark, value_lambda: callable):
         """
         Plot a property of the benchmark
         :param benchmark: The benchmark to plot
-        :param property_name: The property to plot
+        :param value_lambda: The lambda function to get the value to plot
         :return:
         """
         generator_groups = benchmark.report.generators_grouped
@@ -61,7 +61,7 @@ class BenchmarkPlotter:
         for i, generator_group in enumerate(generator_groups):
             coverage_values = [generator.stop_coverage + i * bar_width for generator in
                                generator_groups[generator_group]]
-            property_values = [generator.__getattribute__(property_name) for generator in
+            property_values = [value_lambda(generator) for generator in
                                generator_groups[generator_group]]
 
             ax.bar(coverage_values, property_values, label=generator_group, width=bar_width, align='center')
@@ -87,7 +87,7 @@ class BenchmarkPlotter:
         ax.set_xlabel('Coverage (%)')
         ax.set_ylabel('Total Time (μs)')
 
-        BenchmarkPlotter.plot_property(fig, ax, benchmark, "total_generation_time")
+        BenchmarkPlotter._plot_benchmark(fig, ax, benchmark, lambda generator: generator.total_generation_time)
 
     @staticmethod
     def plot_total_size(benchmark: Benchmark):
@@ -102,7 +102,7 @@ class BenchmarkPlotter:
         ax.set_xlabel('Coverage (%)')
         ax.set_ylabel('Total Size (element count)')
 
-        BenchmarkPlotter.plot_property(fig, ax, benchmark, "total_test_suite_size")
+        BenchmarkPlotter._plot_benchmark(fig, ax, benchmark, lambda generator: generator.total_test_suite_size)
 
     @staticmethod
     def plot_average_time(benchmark: Benchmark):
@@ -117,7 +117,7 @@ class BenchmarkPlotter:
         ax.set_xlabel('Coverage (%)')
         ax.set_ylabel('Average Time (μs)')
 
-        BenchmarkPlotter.plot_property(fig, ax, benchmark, "average_generation_time")
+        BenchmarkPlotter._plot_benchmark(fig, ax, benchmark, lambda generator: generator.average_generation_time)
 
     @staticmethod
     def plot_average_size(benchmark: Benchmark):
@@ -132,7 +132,7 @@ class BenchmarkPlotter:
         ax.set_xlabel('Coverage (%)')
         ax.set_ylabel('Average Size (element count)')
 
-        BenchmarkPlotter.plot_property(fig, ax, benchmark, "average_test_suite_size")
+        BenchmarkPlotter._plot_benchmark(fig, ax, benchmark, lambda generator: generator.average_test_suite_size)
 
     @staticmethod
     def save_plot(output: str):
