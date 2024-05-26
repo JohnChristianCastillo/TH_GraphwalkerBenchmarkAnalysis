@@ -1,8 +1,10 @@
 from io import BytesIO
+from typing import Callable
 
 import matplotlib.pyplot as plt
 import numpy as np
 
+from models.benchmark_generator import BenchmarkGenerator
 from src.models.benchmark import Benchmark
 
 
@@ -47,7 +49,7 @@ class BenchmarkPlotter:
         plt.close()
 
     @staticmethod
-    def _plot_benchmark(fig, ax, benchmark: Benchmark, value_lambda: callable):
+    def _plot_benchmark(fig, ax, benchmark: Benchmark, value_lambda: Callable[[BenchmarkGenerator], int]):
         """
         Plot a property of the benchmark
         :param benchmark: The benchmark to plot
