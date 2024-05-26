@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from shutil import rmtree
+from time import time
 
 from playwright.sync_api import sync_playwright
 from seedir import seedir
@@ -12,8 +13,15 @@ from utils.benchmark_filter import filter_grouped_generators
 
 
 class ReportFactory:
-    def __init__(self, report_type: str = 'html'):
+    def __init__(self, report_type: str = 'html', prompt_delete_temp: bool = True):
+        """
+        Create a report factory
+
+        :param report_type: The type of report to create
+        :param prompt_delete_temp: Whether to prompt the user to delete temporary files
+        """
         self.report_type = report_type
+        self.prompt_delete_temp = prompt_delete_temp
         self.report = None
 
     def create_report(self, benchmark: Benchmark, output: Path, whitelist: list[str] = None,
@@ -29,7 +37,7 @@ class ReportFactory:
         if self.report_type.lower() == 'html':
             return self.create_html_report(benchmark, output, whitelist, blacklist)
         elif self.report_type.lower() == 'pdf':
-            return self.create_pdf_report(benchmark, output, whitelist, blacklist)
+            return self.create_pdf_report(benchmark, output, whitelist, blacklist, self.prompt_delete_temp)
         elif self.report_type.lower() == 'raw_data':
             return self.create_raw_report(benchmark, output, whitelist, blacklist)
         else:
@@ -56,7 +64,8 @@ class ReportFactory:
             with open(images_dir / f'{name}.png', 'wb') as f:
                 f.write(bytesIO.getvalue())
 
-    def create_html_report(self, benchmark: Benchmark, output: Path, whitelist: list[str] = None,
+    @staticmethod
+    def create_html_report(benchmark: Benchmark, output: Path, whitelist: list[str] = None,
                            blacklist: list[str] = None):
         """"
         Create an HTML report
@@ -94,15 +103,16 @@ class ReportFactory:
             f.write('</body>\n')
             f.write('</html>\n')
 
-    def create_pdf_report(self, benchmark: Benchmark, output: Path, whitelist: list[str] = None,
-                          blacklist: list[str] = None):
+    @staticmethod
+    def create_pdf_report(benchmark: Benchmark, output: Path, whitelist: list[str] = None, blacklist: list[str] = None,
+                          prompt_delete_temp: bool = True):
         """
         Create a PDF report
         """
-        temp_dir = output / 'temp'
+        temp_dir = output / f"temp_{time()}"
         temp_dir.mkdir(parents=True, exist_ok=False)
 
-        self.create_html_report(benchmark, temp_dir, whitelist, blacklist)
+        ReportFactory.create_html_report(benchmark, temp_dir, whitelist, blacklist)
 
         playwright_instance = sync_playwright().start()
         chromium = playwright_instance.chromium
@@ -115,12 +125,17 @@ class ReportFactory:
 
         # List files in temp directory, and give prompt to delete
         print(f'PDF report created at \"{output / "report.pdf"}\"')
-        print(f'Temporary files are located at \"{temp_dir}\":')
-        seedir(temp_dir)
+        if prompt_delete_temp:
+            print(f'Temporary files are located at \"{temp_dir}\":')
+            seedir(temp_dir)
 
-        print('Delete temporary files? (y/n)')
-        delete_temp = input()
-        if delete_temp.lower() == 'y':
-            rmtree(temp_dir)
+            print('Delete temporary files? (y/n)')
+            delete_temp = input()
+            if delete_temp.lower() == 'y':
+                rmtree(temp_dir)
+                print('Files deleted.')
+            else:
+                print(f'Files not deleted. Temporary files are located at \"{temp_dir}\"')
         else:
-            print(f'Files not deleted. Temporary files are located at \"{temp_dir}\"')
+            rmtree(temp_dir)
+            print('Temporary files deleted.')
