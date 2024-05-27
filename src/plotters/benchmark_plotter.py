@@ -26,6 +26,7 @@ class BenchmarkPlotter:
                 'Minimum Time': BenchmarkPlotter.plot_minimum_time, 'Maximum Time': BenchmarkPlotter.plot_maximum_time,
                 'Minimum Size': BenchmarkPlotter.plot_minimum_size, 'Maximum Size': BenchmarkPlotter.plot_maximum_size,
                 'Max-Min Size': BenchmarkPlotter.plot_max_minus_min_size,
+                'Max-Min Time': BenchmarkPlotter.plot_max_minus_min_time,
                 'Coverage vs Time': BenchmarkPlotter.plot_coverage_vs_time,
                 'Size over Time': BenchmarkPlotter.plot_average_size_divided_by_average_time,
                 'Average Vertex Visits %': BenchmarkPlotter.plot_average_vertex_percentage_total_visits,
@@ -90,7 +91,7 @@ class BenchmarkPlotter:
 
     @staticmethod
     def _plot_bars(fig, ax, grouped_generators: dict[str, list[BenchmarkGenerator]],
-                   value_lambda: Callable[[BenchmarkGenerator], int], add_trend_line: bool = True):
+                   value_lambda: Callable[[BenchmarkGenerator], int | float], add_trend_line: bool = True):
         """
         Plot results for a list of benchmark generators
         :param fig: The figure to plot on
@@ -115,8 +116,8 @@ class BenchmarkPlotter:
                 trend_line_function = np.poly1d(coefficients)
                 ax.plot(coverage_values, trend_line_function(coverage_values), linestyle='--', linewidth=1)
 
-        # Set x-axis ticks to be the different coverage values
         ax.set_xticks([generator.stop_coverage for generator in grouped_generators[next(iter(grouped_generators))]])
+        ax.yaxis.grid(True)
 
         BenchmarkPlotter._post_process_plot(fig, ax)
 
@@ -136,6 +137,9 @@ class BenchmarkPlotter:
             property_values = [value_lambda(generator) for generator in grouped_generators[generator_group]]
 
             ax.plot(coverage_values, property_values, label=generator_group)
+
+        ax.set_xticks([generator.stop_coverage for generator in grouped_generators[next(iter(grouped_generators))]])
+        ax.yaxis.grid(True)
 
         BenchmarkPlotter._post_process_plot(fig, ax)
 
@@ -274,6 +278,22 @@ class BenchmarkPlotter:
 
         BenchmarkPlotter._plot_bars(fig, ax, grouped_generators,
                                     lambda generator: generator.max_test_suite_size - generator.min_test_suite_size)
+
+    @staticmethod
+    def plot_max_minus_min_time(grouped_generators: dict[str, list[BenchmarkGenerator]]):
+        """
+        Plot the difference between the maximum and minimum time of each generator's path in the benchmark
+
+        :param grouped_generators: The generator benchmarks to plot, grouped by generator name
+        """
+        fig, ax = plt.subplots()
+
+        ax.set_title('Difference between maximum and minimum generation time\nper generator by coverage value')
+        ax.set_xlabel('Coverage (%)')
+        ax.set_ylabel('Difference (μs)')
+
+        BenchmarkPlotter._plot_bars(fig, ax, grouped_generators,
+                                    lambda generator: generator.max_generation_time - generator.min_generation_time)
 
     @staticmethod
     def plot_coverage_vs_time(grouped_generators: dict[str, list[BenchmarkGenerator]]):
@@ -416,8 +436,10 @@ class BenchmarkPlotter:
         ax.set_xlabel('Coverage (%)')
         ax.set_ylabel('Average Percentage (%)')
 
-        BenchmarkPlotter._plot_bars(fig, ax, grouped_generators, lambda
-            generator: generator.average_vertex_visits / BenchmarkPlotter.benchmark.report.model.vertices)
+        BenchmarkPlotter._plot_bars(fig, ax, grouped_generators, lambda generator: [1 for vertex_visits in
+                                                                                    generator.average_vertex_visits_individual.values()
+                                                                                    if vertex_visits != 0].count(
+            1) / BenchmarkPlotter.benchmark.report.model.vertices * 100)
 
     @staticmethod
     def plot_average_edge_percentage_total_visits(grouped_generators: dict[str, list[BenchmarkGenerator]]):
@@ -432,8 +454,10 @@ class BenchmarkPlotter:
         ax.set_xlabel('Coverage (%)')
         ax.set_ylabel('Average Percentage (%)')
 
-        BenchmarkPlotter._plot_bars(fig, ax, grouped_generators, lambda
-            generator: generator.average_edge_visits / BenchmarkPlotter.benchmark.report.model.edges)
+        BenchmarkPlotter._plot_bars(fig, ax, grouped_generators, lambda generator: [1 for edge_visits in
+                                                                                    generator.average_edge_visits_individual.values()
+                                                                                    if edge_visits != 0].count(
+            1) / BenchmarkPlotter.benchmark.report.model.edges * 100)
 
     @staticmethod
     def save_plot(output: str):
