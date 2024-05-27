@@ -72,8 +72,8 @@ class ReportFactory:
         Create an HTML report
         """
         grouped_generators = filter_grouped_generators(benchmark.report.generators_grouped, whitelist, blacklist)
-        plots = BenchmarkPlotter.create_plots(grouped_generators)
-        statistics = BenchmarkStatistics.create_statistics(grouped_generators)
+        plots = BenchmarkPlotter.create_plots(benchmark, grouped_generators)
+        statistics = BenchmarkStatistics.create_statistics(benchmark, grouped_generators)
 
         html_file = output / 'index.html'
         images_dir = output / 'images'

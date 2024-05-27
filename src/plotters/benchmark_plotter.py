@@ -12,6 +12,7 @@ class BenchmarkPlotter:
     """
     A class used to plot the benchmark results
     """
+    benchmark: Benchmark
 
     @staticmethod
     def get_plot_functions() -> dict[str, Callable[[dict[str, list[BenchmarkGenerator]]], None]]:
@@ -26,7 +27,9 @@ class BenchmarkPlotter:
                 'Minimum Size': BenchmarkPlotter.plot_minimum_size, 'Maximum Size': BenchmarkPlotter.plot_maximum_size,
                 'Max-Min Size': BenchmarkPlotter.plot_max_minus_min_size,
                 'Coverage vs Time': BenchmarkPlotter.plot_coverage_vs_time,
-                'Size over Time': BenchmarkPlotter.plot_average_size_divided_by_average_time}
+                'Size over Time': BenchmarkPlotter.plot_average_size_divided_by_average_time,
+                'Average Vertex Visits %': BenchmarkPlotter.plot_average_vertex_percentage_total_visits,
+                'Average Edge Visits %': BenchmarkPlotter.plot_average_edge_percentage_total_visits}
 
     @staticmethod
     def get_per_coverage_plot_functions() -> dict[str, Callable[[dict[str, list[BenchmarkGenerator]], int], None]]:
@@ -50,6 +53,7 @@ class BenchmarkPlotter:
         :param grouped_generators: The generator benchmarks to plot, grouped by generator name
         :param show: bool: Whether to show the plots
         """
+        BenchmarkPlotter.benchmark = benchmark
         plt.close()
         plots: dict[str, BytesIO] = {}
 
@@ -406,8 +410,30 @@ class BenchmarkPlotter:
 
         :param grouped_generators: The generator benchmarks to plot, grouped by generator name
         """
-        # TODO: use bar plot
-        pass
+        fig, ax = plt.subplots()
+
+        ax.set_title('Average percentage of vertices visited\ndivided by total vertices')
+        ax.set_xlabel('Coverage (%)')
+        ax.set_ylabel('Average Percentage (%)')
+
+        BenchmarkPlotter._plot_bars(fig, ax, grouped_generators, lambda
+            generator: generator.average_vertex_visits / BenchmarkPlotter.benchmark.report.model.vertices)
+
+    @staticmethod
+    def plot_average_edge_percentage_total_visits(grouped_generators: dict[str, list[BenchmarkGenerator]]):
+        """
+        Plot the average percentage of total edge visits (e.g. 78% of edges visited)
+
+        :param grouped_generators: The generator benchmarks to plot, grouped by generator name
+        """
+        fig, ax = plt.subplots()
+
+        ax.set_title('Average percentage of edges visited\ndivided by total edges')
+        ax.set_xlabel('Coverage (%)')
+        ax.set_ylabel('Average Percentage (%)')
+
+        BenchmarkPlotter._plot_bars(fig, ax, grouped_generators, lambda
+            generator: generator.average_edge_visits / BenchmarkPlotter.benchmark.report.model.edges)
 
     @staticmethod
     def save_plot(output: str):
