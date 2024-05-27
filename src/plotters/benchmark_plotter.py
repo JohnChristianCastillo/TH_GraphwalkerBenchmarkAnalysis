@@ -25,7 +25,8 @@ class BenchmarkPlotter:
                 'Minimum Size': BenchmarkPlotter.plot_minimum_size, 'Maximum Size': BenchmarkPlotter.plot_maximum_size,
                 'Max-Min Size': BenchmarkPlotter.plot_max_minus_min_size,
                 'Coverage vs Time': BenchmarkPlotter.plot_coverage_vs_time,
-                'Size over Time': BenchmarkPlotter.plot_average_size_divided_by_average_time}
+                'Size over Time': BenchmarkPlotter.plot_average_size_divided_by_average_time,
+                'Histogram Visited Vertices': BenchmarkPlotter.plot_histogram_visited_vertices}
 
     @staticmethod
     def create_plots(grouped_generators: dict[str, list[BenchmarkGenerator]], show: bool = False) -> dict[str, BytesIO]:
@@ -79,6 +80,9 @@ class BenchmarkPlotter:
                 coefficients = np.polyfit(coverage_values, property_values, 4)
                 trend_line_function = np.poly1d(coefficients)
                 ax.plot(coverage_values, trend_line_function(coverage_values), linestyle='--', linewidth=1)
+
+        # Set x-axis ticks to be the different coverage values
+        ax.set_xticks([generator.stop_coverage for generator in grouped_generators[next(iter(grouped_generators))]])
 
         BenchmarkPlotter._post_process_plot(fig, ax)
 
@@ -271,6 +275,25 @@ class BenchmarkPlotter:
             generator: generator.average_test_suite_size / generator.average_generation_time)
 
     @staticmethod
+    def plot_histogram_visited_vertices(grouped_generators: dict[str, list[BenchmarkGenerator]]):
+        """
+        Plot the histogram of visited vertices for each generator in the benchmark
+
+        :param grouped_generators: The generator benchmarks to plot, grouped by generator name
+        """
+        fig, ax = plt.subplots(3, 1)
+
+        for generator_group in grouped_generators:
+            for i, generator in enumerate(grouped_generators[generator_group]):
+                vertex_visits = [item[1] for item in sorted(generator.total_vertex_visits_individual.items())]
+                # Disregard names
+                ax[i].hist(vertex_visits, bins=20, label=generator_group, alpha=0.5)
+                # Add legend, but make it small
+                ax[i].legend(prop={'size': 8})
+
+        plt.tight_layout()
+
+    @staticmethod
     def save_plot(output: str):
         """
         Save the plot to a file
@@ -285,5 +308,5 @@ class BenchmarkPlotter:
         Save the plot to a BytesIO object
         """
         bytesio = BytesIO()
-        plt.savefig(bytesio)
+        plt.savefig(bytesio, format='png', dpi=300)
         return bytesio
