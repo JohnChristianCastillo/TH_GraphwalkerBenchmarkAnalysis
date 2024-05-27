@@ -17,13 +17,13 @@ class BenchmarkStatistics:
         :return: a dictionary with the available statistics functions
         """
         return {'total_test_suite_size_comparison': BenchmarkStatistics.total_test_suite_size_comparison,
-            'total_generation_time_comparison': BenchmarkStatistics.total_generation_time_comparison,
-            'average_test_suite_size_comparison': BenchmarkStatistics.average_test_suite_size_comparison,
-            'average_generation_time_comparison': BenchmarkStatistics.average_generation_time_comparison,
-            'min_test_suite_size_comparison': BenchmarkStatistics.min_test_suite_size_comparison,
-            'min_generation_time_comparison': BenchmarkStatistics.min_generation_time_comparison,
-            'max_test_suite_size_comparison': BenchmarkStatistics.max_test_suite_size_comparison,
-            'max_generation_time_comparison': BenchmarkStatistics.max_generation_time_comparison}
+                'total_generation_time_comparison': BenchmarkStatistics.total_generation_time_comparison,
+                'average_test_suite_size_comparison': BenchmarkStatistics.average_test_suite_size_comparison,
+                'average_generation_time_comparison': BenchmarkStatistics.average_generation_time_comparison,
+                'min_test_suite_size_comparison': BenchmarkStatistics.min_test_suite_size_comparison,
+                'min_generation_time_comparison': BenchmarkStatistics.min_generation_time_comparison,
+                'max_test_suite_size_comparison': BenchmarkStatistics.max_test_suite_size_comparison,
+                'max_generation_time_comparison': BenchmarkStatistics.max_generation_time_comparison}
 
     @staticmethod
     def create_statistics(benchmark: Benchmark, grouped_generators: dict[str, list[BenchmarkGenerator]]) -> dict[
