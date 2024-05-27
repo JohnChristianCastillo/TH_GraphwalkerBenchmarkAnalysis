@@ -50,8 +50,8 @@ class ReportFactory:
         Create a raw report
         """
         grouped_generators = filter_grouped_generators(benchmark.report.generators_grouped, whitelist, blacklist)
-        statistics = BenchmarkStatistics.create_statistics(grouped_generators)
-        plots = BenchmarkPlotter.create_plots(grouped_generators)
+        statistics = BenchmarkStatistics.create_statistics(benchmark, grouped_generators)
+        plots = BenchmarkPlotter.create_plots(benchmark, grouped_generators)
 
         with open(output / 'benchmarks.json', 'w') as f:
             f.write(json.dumps(benchmark.report, indent=4))

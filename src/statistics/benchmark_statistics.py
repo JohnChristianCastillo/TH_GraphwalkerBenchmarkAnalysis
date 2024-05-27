@@ -1,5 +1,6 @@
 from typing import Callable
 
+from models.benchmark import Benchmark
 from models.benchmark_generator import BenchmarkGenerator
 
 
@@ -15,22 +16,22 @@ class BenchmarkStatistics:
 
         :return: a dictionary with the available statistics functions
         """
-        return {
-            'total_test_suite_size_comparison': BenchmarkStatistics.total_test_suite_size_comparison,
+        return {'total_test_suite_size_comparison': BenchmarkStatistics.total_test_suite_size_comparison,
             'total_generation_time_comparison': BenchmarkStatistics.total_generation_time_comparison,
             'average_test_suite_size_comparison': BenchmarkStatistics.average_test_suite_size_comparison,
             'average_generation_time_comparison': BenchmarkStatistics.average_generation_time_comparison,
             'min_test_suite_size_comparison': BenchmarkStatistics.min_test_suite_size_comparison,
             'min_generation_time_comparison': BenchmarkStatistics.min_generation_time_comparison,
             'max_test_suite_size_comparison': BenchmarkStatistics.max_test_suite_size_comparison,
-            'max_generation_time_comparison': BenchmarkStatistics.max_generation_time_comparison
-        }
+            'max_generation_time_comparison': BenchmarkStatistics.max_generation_time_comparison}
 
     @staticmethod
-    def create_statistics(grouped_generators: dict[str, list[BenchmarkGenerator]]) -> dict[str, dict]:
+    def create_statistics(benchmark: Benchmark, grouped_generators: dict[str, list[BenchmarkGenerator]]) -> dict[
+        str, dict]:
         """
         Create the statistics for the benchmark
 
+        :param benchmark: The benchmark to analyse
         :param grouped_generators: The generator benchmarks to analyse, grouped by generator name
         :return: A dictionary with the statistics
         """
@@ -42,7 +43,8 @@ class BenchmarkStatistics:
         return statistics
 
     @staticmethod
-    def percentual_comparison(grouped_generators: dict[str, list[BenchmarkGenerator]], value_lambda: Callable[[BenchmarkGenerator], int]) -> dict[str, dict[int, float]]:
+    def percentual_comparison(grouped_generators: dict[str, list[BenchmarkGenerator]],
+                              value_lambda: Callable[[BenchmarkGenerator], int]) -> dict[str, dict[int, float]]:
         """
         Calculate the percentual comparison for the benchmark in percentage, using the smallest value as 100%
 
@@ -63,8 +65,7 @@ class BenchmarkStatistics:
             percentual_comparison[generator_name] = {}
             for generator in generators:
                 value = value_lambda(generator)
-                percentual_comparison[generator_name][
-                    generator.stop_coverage] = value / value_lowest[
+                percentual_comparison[generator_name][generator.stop_coverage] = value / value_lowest[
                     generator.stop_coverage] * 100
 
         return percentual_comparison
@@ -77,7 +78,8 @@ class BenchmarkStatistics:
         :param grouped_generators: The generator benchmarks to analyse, grouped by generator name
         :return: A dictionary with the total test suite size comparison
         """
-        return BenchmarkStatistics.percentual_comparison(grouped_generators, lambda generator: generator.total_test_suite_size)
+        return BenchmarkStatistics.percentual_comparison(grouped_generators,
+                                                         lambda generator: generator.total_test_suite_size)
 
     @staticmethod
     def total_generation_time_comparison(grouped_generators: dict[str, list[BenchmarkGenerator]]) -> dict:
@@ -87,7 +89,8 @@ class BenchmarkStatistics:
         :param grouped_generators: The generator benchmarks to analyse, grouped by generator name
         :return: A dictionary with the total generation time comparison
         """
-        return BenchmarkStatistics.percentual_comparison(grouped_generators, lambda generator: generator.total_generation_time)
+        return BenchmarkStatistics.percentual_comparison(grouped_generators,
+                                                         lambda generator: generator.total_generation_time)
 
     @staticmethod
     def average_test_suite_size_comparison(grouped_generators: dict[str, list[BenchmarkGenerator]]) -> dict:
@@ -97,7 +100,8 @@ class BenchmarkStatistics:
         :param grouped_generators: The generator benchmarks to analyse, grouped by generator name
         :return: A dictionary with the average test suite size comparison
         """
-        return BenchmarkStatistics.percentual_comparison(grouped_generators, lambda generator: generator.average_test_suite_size)
+        return BenchmarkStatistics.percentual_comparison(grouped_generators,
+                                                         lambda generator: generator.average_test_suite_size)
 
     @staticmethod
     def average_generation_time_comparison(grouped_generators: dict[str, list[BenchmarkGenerator]]) -> dict:
@@ -107,7 +111,8 @@ class BenchmarkStatistics:
         :param grouped_generators: The generator benchmarks to analyse, grouped by generator name
         :return: A dictionary with the average generation time comparison
         """
-        return BenchmarkStatistics.percentual_comparison(grouped_generators, lambda generator: generator.average_generation_time)
+        return BenchmarkStatistics.percentual_comparison(grouped_generators,
+                                                         lambda generator: generator.average_generation_time)
 
     @staticmethod
     def min_test_suite_size_comparison(grouped_generators: dict[str, list[BenchmarkGenerator]]) -> dict:
@@ -117,7 +122,8 @@ class BenchmarkStatistics:
         :param grouped_generators: The generator benchmarks to analyse, grouped by generator name
         :return: A dictionary with the min test suite size comparison
         """
-        return BenchmarkStatistics.percentual_comparison(grouped_generators, lambda generator: generator.min_test_suite_size)
+        return BenchmarkStatistics.percentual_comparison(grouped_generators,
+                                                         lambda generator: generator.min_test_suite_size)
 
     @staticmethod
     def min_generation_time_comparison(grouped_generators: dict[str, list[BenchmarkGenerator]]) -> dict:
@@ -127,7 +133,8 @@ class BenchmarkStatistics:
         :param grouped_generators: The generator benchmarks to analyse, grouped by generator name
         :return: A dictionary with the min generation time comparison
         """
-        return BenchmarkStatistics.percentual_comparison(grouped_generators, lambda generator: generator.min_generation_time)
+        return BenchmarkStatistics.percentual_comparison(grouped_generators,
+                                                         lambda generator: generator.min_generation_time)
 
     @staticmethod
     def max_test_suite_size_comparison(grouped_generators: dict[str, list[BenchmarkGenerator]]) -> dict:
@@ -137,7 +144,8 @@ class BenchmarkStatistics:
         :param grouped_generators: The generator benchmarks to analyse, grouped by generator name
         :return: A dictionary with the max test suite size comparison
         """
-        return BenchmarkStatistics.percentual_comparison(grouped_generators, lambda generator: generator.max_test_suite_size)
+        return BenchmarkStatistics.percentual_comparison(grouped_generators,
+                                                         lambda generator: generator.max_test_suite_size)
 
     @staticmethod
     def max_generation_time_comparison(grouped_generators: dict[str, list[BenchmarkGenerator]]) -> dict:
@@ -147,4 +155,5 @@ class BenchmarkStatistics:
         :param grouped_generators: The generator benchmarks to analyse, grouped by generator name
         :return: A dictionary with the max generation time comparison
         """
-        return BenchmarkStatistics.percentual_comparison(grouped_generators, lambda generator: generator.max_generation_time)
+        return BenchmarkStatistics.percentual_comparison(grouped_generators,
+                                                         lambda generator: generator.max_generation_time)

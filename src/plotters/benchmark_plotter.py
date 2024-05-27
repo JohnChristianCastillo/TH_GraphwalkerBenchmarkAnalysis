@@ -4,6 +4,7 @@ from typing import Callable
 import matplotlib.pyplot as plt
 import numpy as np
 
+from models.benchmark import Benchmark
 from models.benchmark_generator import BenchmarkGenerator
 
 
@@ -40,10 +41,12 @@ class BenchmarkPlotter:
                 'Histogram Average Visited Edges': BenchmarkPlotter.plot_histogram_average_visited_edges}
 
     @staticmethod
-    def create_plots(grouped_generators: dict[str, list[BenchmarkGenerator]], show: bool = False) -> dict[str, BytesIO]:
+    def create_plots(benchmark: Benchmark, grouped_generators: dict[str, list[BenchmarkGenerator]],
+                     show: bool = False) -> dict[str, BytesIO]:
         """
         Plot the benchmark results
 
+        :param benchmark: The benchmark to plot
         :param grouped_generators: The generator benchmarks to plot, grouped by generator name
         :param show: bool: Whether to show the plots
         """
@@ -395,6 +398,16 @@ class BenchmarkPlotter:
 
         BenchmarkPlotter._plot_histogram(fig, ax, grouped_generators,
                                          lambda generator: generator.average_edge_visits_individual, coverage_value)
+
+    @staticmethod
+    def plot_average_vertex_percentage_total_visits(grouped_generators: dict[str, list[BenchmarkGenerator]]):
+        """
+        Plot the average percentage of total vertex visits (e.g. 78% of vertices visited)
+
+        :param grouped_generators: The generator benchmarks to plot, grouped by generator name
+        """
+        # TODO: use bar plot
+        pass
 
     @staticmethod
     def save_plot(output: str):
