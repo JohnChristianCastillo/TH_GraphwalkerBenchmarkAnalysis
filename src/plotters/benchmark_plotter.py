@@ -112,7 +112,7 @@ class BenchmarkPlotter:
             ax.bar(coverage_values, property_values, label=generator_group, width=bar_width, align='center')
 
             if add_trend_line:
-                coefficients = np.polyfit(coverage_values, property_values, 4)
+                coefficients = np.polyfit(coverage_values, property_values, 3)
                 trend_line_function = np.poly1d(coefficients)
                 ax.plot(coverage_values, trend_line_function(coverage_values), linestyle='--', linewidth=1)
 
