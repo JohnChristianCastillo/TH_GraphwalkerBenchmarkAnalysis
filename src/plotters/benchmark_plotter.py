@@ -304,7 +304,7 @@ class BenchmarkPlotter:
         """
         fig, ax = plt.subplots()
 
-        ax.set_title('Coverage vs Time per generator')
+        ax.set_title('Coverage vs Generation time per generator')
         ax.set_xlabel('Coverage (%)')
         ax.set_ylabel('Time (μs)')
 
