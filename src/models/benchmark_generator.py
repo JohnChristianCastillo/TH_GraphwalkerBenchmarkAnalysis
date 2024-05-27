@@ -102,11 +102,11 @@ class BenchmarkGenerator(dict):
         return self["TotalVertexVisits"]
 
     @property
-    def total_edges_visits(self) -> int:
+    def total_edge_visits(self) -> int:
         """
         Get the total edges visits.
         """
-        return self["TotalEdgesVisits"]
+        return self["TotalEdgeVisits"]
 
     @property
     def average_vertex_visits(self) -> int:
@@ -116,11 +116,11 @@ class BenchmarkGenerator(dict):
         return self["AverageVertexVisits"]
 
     @property
-    def average_edges_visits(self) -> int:
+    def average_edge_visits(self) -> int:
         """
         Get the average edges visits.
         """
-        return self["AverageEdgesVisits"]
+        return self["AverageEdgeVisits"]
 
     @property
     def total_unvisited_vertices(self) -> int:
@@ -158,11 +158,11 @@ class BenchmarkGenerator(dict):
         return self["TotalVertexVisitsIndividual"]
 
     @property
-    def total_edges_visits_individual(self) -> dict[str, int]:
+    def total_edge_visits_individual(self) -> dict[str, int]:
         """
         Get the total edges visits by individual edge.
         """
-        return self["TotalEdgesVisitsIndividual"]
+        return self["TotalEdgeVisitsIndividual"]
 
     @property
     def average_vertex_visits_individual(self) -> dict[str, int]:
@@ -172,11 +172,11 @@ class BenchmarkGenerator(dict):
         return self["AverageVertexVisitsIndividual"]
 
     @property
-    def average_edges_visits_individual(self) -> dict[str, int]:
+    def average_edge_visits_individual(self) -> dict[str, int]:
         """
         Get the average edges visits by individual edge.
         """
-        return self["AverageEdgesVisitsIndividual"]
+        return self["AverageEdgeVisitsIndividual"]
 
     def __str__(self):
         """
