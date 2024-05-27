@@ -34,7 +34,10 @@ class BenchmarkPlotter:
 
         :return: a dictionary with the available plot functions
         """
-        return {'Histogram Visited Vertices': BenchmarkPlotter.plot_histogram_total_visited_vertices}
+        return {'Histogram Total Visited Vertices': BenchmarkPlotter.plot_histogram_total_visited_vertices,
+                'Histogram Total Visited Edges': BenchmarkPlotter.plot_histogram_total_visited_edges,
+                'Histogram Average Visited Vertices': BenchmarkPlotter.plot_histogram_average_visited_vertices,
+                'Histogram Average Visited Edges': BenchmarkPlotter.plot_histogram_average_visited_edges}
 
     @staticmethod
     def create_plots(grouped_generators: dict[str, list[BenchmarkGenerator]], show: bool = False) -> dict[str, BytesIO]:
@@ -299,7 +302,8 @@ class BenchmarkPlotter:
             generator: generator.average_test_suite_size / generator.average_generation_time)
 
     @staticmethod
-    def _plot_histogram(fig, ax, grouped_generators: dict[str, list[BenchmarkGenerator]], property_lambda: Callable[[BenchmarkGenerator], dict], coverage_value):
+    def _plot_histogram(fig, ax, grouped_generators: dict[str, list[BenchmarkGenerator]],
+                        property_lambda: Callable[[BenchmarkGenerator], dict], coverage_value):
         """
         Plot the histogram of a property for each generator in the benchmark, for a specific coverage value
 
@@ -314,8 +318,10 @@ class BenchmarkPlotter:
                 if generator.stop_coverage != coverage_value:
                     continue
 
-                items = [item[0] for item in sorted(property_lambda(generator).items(), key=lambda x: x[1], reverse=True)]
-                item_visits = [int(item[1]) for item in sorted(property_lambda(generator).items(), key=lambda x: x[1], reverse=True)]
+                items = [item[0] for item in
+                         sorted(property_lambda(generator).items(), key=lambda x: x[1], reverse=True)]
+                item_visits = [int(item[1]) for item in
+                               sorted(property_lambda(generator).items(), key=lambda x: x[1], reverse=True)]
                 ax.hist(items, weights=item_visits, bins=len(items), label=generator_group, alpha=0.5)
 
         ax.set_xticks([])
@@ -335,7 +341,60 @@ class BenchmarkPlotter:
         ax.set_xlabel(f"Vertex")
         ax.set_ylabel('Visit Count')
 
-        BenchmarkPlotter._plot_histogram(fig, ax, grouped_generators, lambda generator: generator.total_vertex_visits_individual, coverage_value)
+        BenchmarkPlotter._plot_histogram(fig, ax, grouped_generators,
+                                         lambda generator: generator.total_vertex_visits_individual, coverage_value)
+
+    @staticmethod
+    def plot_histogram_total_visited_edges(grouped_generators: dict[str, list[BenchmarkGenerator]], coverage_value):
+        """
+        Plot the histogram of visited edges for each generator in the benchmark, for a specific coverage value (since this would otherwise be hard to read)
+
+        :param grouped_generators: The generator benchmarks to plot, grouped by generator name
+        :param coverage_value: The coverage value to plot the histogram for
+        """
+        fig, ax = plt.subplots()
+
+        ax.set_title(f'Edge total visit count histogram for\ncoverage value {coverage_value}%')
+        ax.set_xlabel(f"Edge")
+        ax.set_ylabel('Visit Count')
+
+        BenchmarkPlotter._plot_histogram(fig, ax, grouped_generators,
+                                         lambda generator: generator.total_edge_visits_individual, coverage_value)
+
+    @staticmethod
+    def plot_histogram_average_visited_vertices(grouped_generators: dict[str, list[BenchmarkGenerator]],
+                                                coverage_value):
+        """
+        Plot the histogram of visited vertices for each generator in the benchmark, for a specific coverage value (since this would otherwise be hard to read)
+
+        :param grouped_generators: The generator benchmarks to plot, grouped by generator name
+        :param coverage_value: The coverage value to plot the histogram for
+        """
+        fig, ax = plt.subplots()
+
+        ax.set_title(f'Vertex average visit count histogram for\ncoverage value {coverage_value}%')
+        ax.set_xlabel(f"Vertex")
+        ax.set_ylabel('Visit Count')
+
+        BenchmarkPlotter._plot_histogram(fig, ax, grouped_generators,
+                                         lambda generator: generator.average_vertex_visits_individual, coverage_value)
+
+    @staticmethod
+    def plot_histogram_average_visited_edges(grouped_generators: dict[str, list[BenchmarkGenerator]], coverage_value):
+        """
+        Plot the histogram of visited edges for each generator in the benchmark, for a specific coverage value (since this would otherwise be hard to read)
+
+        :param grouped_generators: The generator benchmarks to plot, grouped by generator name
+        :param coverage_value: The coverage value to plot the histogram for
+        """
+        fig, ax = plt.subplots()
+
+        ax.set_title(f'Edge average visit count histogram for\ncoverage value {coverage_value}%')
+        ax.set_xlabel(f"Edge")
+        ax.set_ylabel('Visit Count')
+
+        BenchmarkPlotter._plot_histogram(fig, ax, grouped_generators,
+                                         lambda generator: generator.average_edge_visits_individual, coverage_value)
 
     @staticmethod
     def save_plot(output: str):
