@@ -426,13 +426,13 @@ class BenchmarkPlotter:
     @staticmethod
     def plot_average_vertex_percentage_total_visits(grouped_generators: dict[str, list[BenchmarkGenerator]]):
         """
-        Plot the average percentage of total vertex visits (e.g. 78% of vertices visited)
+        Plot the percentage of unique vertex visits in an average traversal (e.g. 78% of vertices visited)
 
         :param grouped_generators: The generator benchmarks to plot, grouped by generator name
         """
         fig, ax = plt.subplots()
 
-        ax.set_title('Average percentage of vertices visited\ndivided by total vertices')
+        ax.set_title('Percentage of unique vertices visited\nin an average traversal')
         ax.set_xlabel('Coverage (%)')
         ax.set_ylabel('Average Percentage (%)')
 
@@ -444,16 +444,17 @@ class BenchmarkPlotter:
     @staticmethod
     def plot_average_edge_percentage_total_visits(grouped_generators: dict[str, list[BenchmarkGenerator]]):
         """
-        Plot the average percentage of total edge visits (e.g. 78% of edges visited)
+        Plot the percentage of unique edge visits in an average traversal (e.g. 78% of edges visited)
 
         :param grouped_generators: The generator benchmarks to plot, grouped by generator name
+
+        :remark: This will not reach the proper coverage percentage, as some edges' average visit count is < 0.5, and rounded to a long by the generator
         """
         fig, ax = plt.subplots()
 
-        ax.set_title('Average percentage of edges visited\ndivided by total edges')
+        ax.set_title('Percentage of unique edges visited\nin an average traversal')
         ax.set_xlabel('Coverage (%)')
         ax.set_ylabel('Average Percentage (%)')
-
         BenchmarkPlotter._plot_bars(fig, ax, grouped_generators, lambda generator: [1 for edge_visits in
                                                                                     generator.average_edge_visits_individual.values()
                                                                                     if edge_visits != 0].count(
