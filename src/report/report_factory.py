@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from shutil import rmtree
 from time import time
@@ -133,8 +134,8 @@ class ReportFactory:
 
             f.write('<h2>Plots</h2>\n')
             for name in plots.keys():
-                f.write(f'<h3>{name}</h3>\n')
-                f.write(f'<img src="images/{name}.png" alt="{name}">\n')
+                f.write(f'<h3>{name}</h3>')
+                f.write(f'<img src="images/{name}.png" alt="{name}" width="800">\n')
 
             f.write('</body>\n')
             f.write('</html>\n')
