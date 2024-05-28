@@ -114,7 +114,7 @@ class BenchmarkPlotter:
             if add_trend_line:
                 coefficients = np.polyfit(coverage_values, property_values, 3)
                 trend_line_function = np.poly1d(coefficients)
-                ax.plot(coverage_values, trend_line_function(coverage_values), linestyle='--', linewidth=1)
+                ax.plot(coverage_values, trend_line_function(coverage_values), linestyle='--', linewidth=1, alpha=0.7)
 
         ax.set_xticks([generator.stop_coverage for generator in grouped_generators[next(iter(grouped_generators))]])
         ax.yaxis.grid(True)
