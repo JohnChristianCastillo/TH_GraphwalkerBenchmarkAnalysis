@@ -1,6 +1,6 @@
 {
   "Seed": 5719690575850774808,
-  "GenerationTime": 342,
+  "GenerationTime": 340,
   "TestSuiteSize": 347,
   "VertexVisits": {
     "FindTransactions_v_Find_By_Date_Range_Valid[FindTransactions_24962a11-e901-4fce-b720-a41149390085]": 1,
