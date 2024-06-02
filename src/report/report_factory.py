@@ -1,5 +1,5 @@
 import json
-import os
+import csv
 from pathlib import Path
 from shutil import rmtree
 from time import time
@@ -41,6 +41,8 @@ class ReportFactory:
             return self.create_pdf_report(benchmark, output, whitelist, blacklist, self.prompt_delete_temp)
         elif self.report_type.lower() == 'raw_data':
             return self.create_raw_report(benchmark, output, whitelist, blacklist)
+        elif self.report_type.lower() == 'csv':
+            return self.create_csv_report(benchmark, output, whitelist, blacklist)
         else:
             raise ValueError(f'Unknown report type \"{self.report_type}\"')
 
@@ -204,3 +206,22 @@ class ReportFactory:
         else:
             rmtree(temp_dir)
             print('Temporary files deleted.')
+
+    @staticmethod
+    def create_csv_report(benchmark: Benchmark, output: Path, whitelist: list[str] = None, blacklist: list[str] = None):
+        """
+        Create a CSV report, does not generate plots
+        """
+        grouped_generators = filter_grouped_generators(benchmark.report.generators_grouped, whitelist, blacklist)
+        statistics = BenchmarkStatistics.create_statistics(benchmark, grouped_generators)
+
+        csv_file = output / 'statistics.csv'
+        with open(csv_file, 'w', newline='') as f:
+            writer = csv.writer(f)
+            for statistic_name, statistics in statistics.items():
+                writer.writerow(['Statistic:', statistic_name])
+                writer.writerow(['Generator', 'Stop Coverage', 'Value'])
+                for generator_name, generator_statistics in statistics.items():
+                    for stop_coverage, value in generator_statistics.items():
+                        writer.writerow([generator_name, stop_coverage, value])
+                writer.writerow([])
