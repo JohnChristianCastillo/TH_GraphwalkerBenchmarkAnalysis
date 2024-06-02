@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from models.benchmark_run_group import BenchmarkRunGroup
 from src.models.benchmark_report import BenchmarkReport
 
 
@@ -9,7 +10,7 @@ class Benchmark:
     Represent a benchmark output directory with general report, and run reports.
     """
 
-    def __init__(self, report: BenchmarkReport, runs: dict):
+    def __init__(self, report: BenchmarkReport, runs: list[BenchmarkRunGroup]):
         """
         Initialize the benchmark.
         :param report: Benchmark report
@@ -48,25 +49,10 @@ class Benchmark:
         if not runs_path.exists():
             raise FileNotFoundError(f"{runs_path} does not exist.")
 
-        runs = {}
-        # E.g. a folder "DirectedChinesePostmanPath(EdgeCoverage(80))" with run_0_path.json and run_0_report.json, etc... for run_1, run_2, etc...
+        runs = []
         for generator_folder in runs_path.iterdir():
-            if not generator_folder.is_dir():
-                continue
-
-            runs[generator_folder.name] = []
-            for run_file in generator_folder.iterdir():
-                if not run_file.is_file():
-                    continue
-
-                if run_file.name.endswith("_report.json"):
-                    with run_file.open() as f:
-                        # TODO: Create RunReport class
-                        pass
-                elif run_file.name.endswith("_path.json"):
-                    with run_file.open() as f:
-                        # TODO: Create RunPath class
-                        pass
+            if generator_folder.is_dir():
+                runs.append(BenchmarkRunGroup.from_dir(generator_folder))
 
         return cls(report, runs)
 
