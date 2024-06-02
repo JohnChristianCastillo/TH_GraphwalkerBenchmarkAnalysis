@@ -72,6 +72,7 @@ class BenchmarkPlotter:
         plt.close()
         plots: dict[str, BytesIO] = {}
 
+        # General bar plots
         for plot_function_name, plot_function in BenchmarkPlotter.get_plot_functions().items():
             plt.close()
             plot_function(grouped_generators)
@@ -79,6 +80,16 @@ class BenchmarkPlotter:
                 plt.show()
             plots[plot_function_name] = BenchmarkPlotter.save_plot_bytesio()
 
+        # Test execution bar plots
+        if len(benchmark.run_groups) > 0:
+            for plot_function_name, plot_function in BenchmarkPlotter.get_test_execution_plot_functions().items():
+                plt.close()
+                plot_function(benchmark, grouped_generators)
+                if show:
+                    plt.show()
+                plots[plot_function_name] = BenchmarkPlotter.save_plot_bytesio()
+
+        # Prepare coverage values
         coverage_values = []
         for generator_group in grouped_generators:
             for generator in grouped_generators[generator_group]:
@@ -87,6 +98,7 @@ class BenchmarkPlotter:
 
         coverage_values.sort()
 
+        # Per coverage plots
         for plot_function_name, plot_function in BenchmarkPlotter.get_per_coverage_plot_functions().items():
             for coverage_value in coverage_values:
                 plt.close()

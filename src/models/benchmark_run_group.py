@@ -9,18 +9,18 @@ class BenchmarkRunGroup:
     Group of runs for a specific algorithm and coverage criterion.
     """
 
-    def __init__(self, algorithm: str, stop_condition: str, coverage: int, runs: list[BenchmarkRun]):
+    def __init__(self, algorithm: str, stop_condition: str, stop_coverage: int, runs: list[BenchmarkRun]):
         """
         Create a benchmark run group
 
         :param algorithm: The algorithm
         :param stop_condition: The stop condition
-        :param coverage: The coverage criterion
+        :param stop_coverage: The coverage criterion
         :param runs: The runs
         """
         self.algorithm = algorithm
         self.stop_condition = stop_condition
-        self.coverage = coverage
+        self.stop_coverage = stop_coverage
         self.runs = runs
 
     @classmethod
