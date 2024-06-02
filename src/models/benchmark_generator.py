@@ -1,3 +1,7 @@
+from utils.benchmark_name_parser import parse_stop_condition_from_name, parse_coverage_from_stop_condition, \
+    parse_algorithm_from_name
+
+
 class BenchmarkGenerator(dict):
     """
     Represents a generator in a benchmark report.
@@ -14,29 +18,25 @@ class BenchmarkGenerator(dict):
         return self._name
 
     @property
-    def generator(self) -> str:
+    def algorithm(self) -> str:
         """
-        Get the generator.
+        Get the generator's algorithm.
         """
-        return self.name.split("(")[0]
+        return parse_algorithm_from_name(self.name)
 
     @property
     def stop_condition(self) -> str:
         """
         Get the stop condition.
         """
-        start = self.name.find("(")
-        end = self.name.rfind(")")
-        return self.name[start + 1:end]
+        return parse_stop_condition_from_name(self.name)
 
     @property
     def stop_coverage(self) -> int:
         """
         Get the stop condition's coverage.
         """
-        start = self.stop_condition.lower().find("coverage(")
-        end = self.stop_condition.find(")")
-        return int(self.stop_condition[start + 9:end])
+        return parse_coverage_from_stop_condition(self.stop_condition)
 
     @property
     def total_generation_time(self) -> int:

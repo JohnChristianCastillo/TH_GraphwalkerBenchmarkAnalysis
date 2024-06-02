@@ -45,7 +45,7 @@ class BenchmarkReport(dict):
 
     @staticmethod
     def _generator_sort_lambda(generator: BenchmarkGenerator):
-        return generator.generator, generator.stop_coverage
+        return generator.algorithm, generator.stop_coverage
 
     @property
     def generators_grouped(self) -> dict[str, list[BenchmarkGenerator]]:
@@ -54,9 +54,9 @@ class BenchmarkReport(dict):
         """
         generators = {}
         for generator in self.generators_sorted:
-            if generator.generator not in generators:
-                generators[generator.generator] = []
-            generators[generator.generator].append(generator)
+            if generator.algorithm not in generators:
+                generators[generator.algorithm] = []
+            generators[generator.algorithm].append(generator)
         return generators
 
     @property

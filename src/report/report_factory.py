@@ -108,7 +108,7 @@ class ReportFactory:
 
             for generator in benchmark.report.generators_sorted:
                 f.write('<tr>\n')
-                f.write(f'<td>{generator.generator}</td>\n')
+                f.write(f'<td>{generator.algorithm}</td>\n')
                 f.write(f'<td>{generator.stop_condition}</td>\n')
                 f.write('</tr>\n')
 
