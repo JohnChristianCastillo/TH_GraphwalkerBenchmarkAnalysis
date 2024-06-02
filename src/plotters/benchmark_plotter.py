@@ -81,7 +81,7 @@ class BenchmarkPlotter:
             plots[plot_function_name] = BenchmarkPlotter.save_plot_bytesio()
 
         # Test execution bar plots
-        if len(benchmark.run_groups) > 0:
+        if all([run_group.successful_runs for run_group in benchmark.run_groups]):
             for plot_function_name, plot_function in BenchmarkPlotter.get_test_execution_plot_functions().items():
                 plt.close()
                 plot_function(benchmark, grouped_generators)
@@ -156,11 +156,8 @@ class BenchmarkPlotter:
         group_count = len(grouped_generators)
         bar_width = 6 / group_count
 
-        run_groups_to_plot = [run_group for run_group in benchmark.run_groups if
-                              run_group.algorithm in grouped_generators.keys()]
-
         grouped_run_groups = {}
-        for run_group in run_groups_to_plot:
+        for run_group in benchmark.run_groups_sorted:
             if run_group.algorithm not in grouped_run_groups:
                 grouped_run_groups[run_group.algorithm] = []
             grouped_run_groups[run_group.algorithm].append(run_group)
