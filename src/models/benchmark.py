@@ -58,3 +58,30 @@ class Benchmark:
 
     def __str__(self):
         return f"Benchmark({self.report.name})"
+
+
+
+    @property
+    def run_groups_sorted(self) -> list[BenchmarkRunGroup]:
+        """
+        Get the run groups sorted by algorithm and stop coverage.
+        """
+        run_groups = self.run_groups
+        run_groups.sort(key=Benchmark._run_group_sort_lambda)
+        return run_groups
+
+    @staticmethod
+    def _run_group_sort_lambda(run_group: BenchmarkRunGroup):
+        return run_group.algorithm, run_group.stop_coverage
+
+    @property
+    def run_groups_grouped(self) -> dict[str, list[BenchmarkRunGroup]]:
+        """
+        Get the run groups grouped by algorithm.
+        """
+        run_groups = {}
+        for run_group in self.run_groups_sorted:
+            if run_group.algorithm not in run_groups:
+                run_groups[run_group.algorithm] = []
+            run_groups[run_group.algorithm].append(run_group)
+        return run_groups
