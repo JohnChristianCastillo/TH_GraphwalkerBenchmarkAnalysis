@@ -10,14 +10,14 @@ class Benchmark:
     Represent a benchmark output directory with general report, and run reports.
     """
 
-    def __init__(self, report: BenchmarkReport, runs: list[BenchmarkRunGroup]):
+    def __init__(self, report: BenchmarkReport, run_groups: list[BenchmarkRunGroup]):
         """
         Initialize the benchmark.
         :param report: Benchmark report
-        :param runs: Runs dictionary
+        :param run_groups: List of run groups
         """
         self.report = report
-        self.runs = runs
+        self.run_groups = run_groups
 
     @property
     def name(self) -> str:
