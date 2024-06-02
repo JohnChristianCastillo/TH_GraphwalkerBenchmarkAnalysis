@@ -50,3 +50,20 @@ class BenchmarkRunGroup:
                 runs.append(BenchmarkRun.from_files(path_file, report_file, test_results_file))
 
         return cls(algorithm, stop_condition, coverage, runs)
+
+    @property
+    def average_execution_time(self) -> float:
+        """
+        The average execution time of the runs in the group
+
+        :return: The average execution time
+        """
+        total_sum = 0
+        failure_count = 0
+        for run in self.runs:
+            if run.is_failure:
+                failure_count += 1
+                continue
+            total_sum += run.test_duration
+
+        return total_sum / (len(self.runs) - failure_count)
