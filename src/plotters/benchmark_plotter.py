@@ -32,8 +32,7 @@ class BenchmarkPlotter:
                 'Average Vertex Visits %': BenchmarkPlotter.plot_average_vertex_percentage_total_visits,
                 'Average Edge Visits %': BenchmarkPlotter.plot_average_edge_percentage_total_visits,
                 'Average vs Minimum Time': BenchmarkPlotter.plot_average_vs_minimum_time,
-                'Average vs Minimum Size': BenchmarkPlotter.plot_average_vs_minimum_size
-                }
+                'Average vs Minimum Size': BenchmarkPlotter.plot_average_vs_minimum_size}
 
     @staticmethod
     def get_per_coverage_plot_functions() -> dict[str, Callable[[dict[str, list[BenchmarkGenerator]], int], None]]:
@@ -46,6 +45,18 @@ class BenchmarkPlotter:
                 'Histogram Total Visited Edges': BenchmarkPlotter.plot_histogram_total_visited_edges,
                 'Histogram Average Visited Vertices': BenchmarkPlotter.plot_histogram_average_visited_vertices,
                 'Histogram Average Visited Edges': BenchmarkPlotter.plot_histogram_average_visited_edges}
+
+    @staticmethod
+    def get_test_execution_plot_functions() -> dict[
+        str, Callable[[Benchmark, dict[str, list[BenchmarkGenerator]]], None]]:
+        """
+        Get the available plot functions that are run per coverage value
+
+        :return: a dictionary with the available plot functions
+        """
+        return {'Average Test Execution Time': BenchmarkPlotter.plot_average_test_execution_time,
+                'Minimum Test Execution Time': BenchmarkPlotter.plot_minimum_test_execution_time,
+                'Maximum Test Execution Time': BenchmarkPlotter.plot_maximum_test_execution_time}
 
     @staticmethod
     def create_plots(benchmark: Benchmark, grouped_generators: dict[str, list[BenchmarkGenerator]],
@@ -120,6 +131,41 @@ class BenchmarkPlotter:
                 ax.plot(coverage_values, trend_line_function(coverage_values), linestyle='--', linewidth=1, alpha=0.7)
 
         ax.set_xticks([generator.stop_coverage for generator in grouped_generators[next(iter(grouped_generators))]])
+        ax.yaxis.grid(True)
+
+        BenchmarkPlotter._post_process_plot(fig, ax)
+
+    @staticmethod
+    def _plot_bars_tests(fig, ax, benchmark: Benchmark, grouped_generators: dict[str, list[BenchmarkGenerator]],
+                         value_lambda: Callable[[BenchmarkGenerator], int | float], add_trend_line: bool = True):
+        """
+        Plot results for test runs, given a list of benchmark generators to use as filters
+        """
+        group_count = len(grouped_generators)
+        bar_width = 6 / group_count
+
+        run_groups_to_plot = [run_group for run_group in benchmark.run_groups if
+                              run_group.algorithm in grouped_generators.keys()]
+
+        grouped_run_groups = {}
+        for run_group in run_groups_to_plot:
+            if run_group.algorithm not in grouped_run_groups:
+                grouped_run_groups[run_group.algorithm] = []
+            grouped_run_groups[run_group.algorithm].append(run_group)
+
+        for i, algorithm in enumerate(grouped_run_groups):
+            coverage_values = [run_group.stop_coverage + i * bar_width for run_group in
+                               grouped_run_groups[algorithm]]
+            property_values = [value_lambda(run_group) for run_group in grouped_run_groups[algorithm]]
+
+            ax.bar(coverage_values, property_values, label=algorithm, width=bar_width, align='center')
+
+            if add_trend_line:
+                coefficients = np.polyfit(coverage_values, property_values, 3)
+                trend_line_function = np.poly1d(coefficients)
+                ax.plot(coverage_values, trend_line_function(coverage_values), linestyle='--', linewidth=1, alpha=0.7)
+
+        ax.set_xticks([run_group.stop_coverage for run_group in grouped_run_groups[next(iter(grouped_run_groups))]])
         ax.yaxis.grid(True)
 
         BenchmarkPlotter._post_process_plot(fig, ax)
@@ -496,6 +542,57 @@ class BenchmarkPlotter:
 
         BenchmarkPlotter._plot_bars(fig, ax, grouped_generators,
                                     lambda generator: generator.average_test_suite_size - generator.min_test_suite_size)
+
+    @staticmethod
+    def plot_average_test_execution_time(benchmark: Benchmark, grouped_generators: dict[str, list[BenchmarkGenerator]]):
+        """
+        Plot the average time taken to execute a test suite
+
+        :param benchmark: The benchmark object to get run information from
+        :param grouped_generators: The generator benchmarks to plot, grouped by generator name, to use for filtering
+        """
+        fig, ax = plt.subplots()
+
+        ax.set_title('Average test execution time per generator by coverage value')
+        ax.set_xlabel('Coverage (%)')
+        ax.set_ylabel('Average Time (μs)')
+
+        BenchmarkPlotter._plot_bars_tests(fig, ax, benchmark, grouped_generators,
+                                          lambda run_group: run_group.average_test_duration)
+
+    @staticmethod
+    def plot_minimum_test_execution_time(benchmark: Benchmark, grouped_generators: dict[str, list[BenchmarkGenerator]]):
+        """
+        Plot the minimum time taken to execute a test suite
+
+        :param benchmark: The benchmark object to get run information from
+        :param grouped_generators: The generator benchmarks to plot, grouped by generator name, to use for filtering
+        """
+        fig, ax = plt.subplots()
+
+        ax.set_title('Minimum test execution time per generator by coverage value')
+        ax.set_xlabel('Coverage (%)')
+        ax.set_ylabel('Minimum Time (μs)')
+
+        BenchmarkPlotter._plot_bars_tests(fig, ax, benchmark, grouped_generators,
+                                          lambda run_group: run_group.minimum_test_duration)
+
+    @staticmethod
+    def plot_maximum_test_execution_time(benchmark: Benchmark, grouped_generators: dict[str, list[BenchmarkGenerator]]):
+        """
+        Plot the maximum time taken to execute a test suite
+
+        :param benchmark: The benchmark object to get run information from
+        :param grouped_generators: The generator benchmarks to plot, grouped by generator name, to use for filtering
+        """
+        fig, ax = plt.subplots()
+
+        ax.set_title('Maximum test execution time per generator by coverage value')
+        ax.set_xlabel('Coverage (%)')
+        ax.set_ylabel('Maximum Time (μs)')
+
+        BenchmarkPlotter._plot_bars_tests(fig, ax, benchmark, grouped_generators,
+                                          lambda run_group: run_group.maximum_test_duration)
 
     @staticmethod
     def save_plot(output: str):
