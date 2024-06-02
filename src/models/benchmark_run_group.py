@@ -52,18 +52,55 @@ class BenchmarkRunGroup:
         return cls(algorithm, stop_condition, coverage, runs)
 
     @property
-    def average_execution_time(self) -> float:
+    def successful_runs(self) -> list[BenchmarkRun]:
         """
-        The average execution time of the runs in the group
+        The successful runs in the group
 
-        :return: The average execution time
+        :return: The successful runs
         """
-        total_sum = 0
-        failure_count = 0
-        for run in self.runs:
-            if run.is_failure:
-                failure_count += 1
-                continue
-            total_sum += run.test_duration
+        return [run for run in self.runs if not run.is_failure]
 
-        return total_sum / (len(self.runs) - failure_count)
+    @property
+    def failed_runs(self) -> list[BenchmarkRun]:
+        """
+        The failed runs in the group
+
+        :return: The failed runs
+        """
+        return [run for run in self.runs if run.is_failure]
+
+    @property
+    def average_test_duration(self) -> float:
+        """
+        The average test duration of the runs in the group
+
+        :return: The average test duration
+        """
+        return sum([run.test_duration for run in self.successful_runs]) / len(self.successful_runs)
+
+    @property
+    def average_driver_time_spent_waiting(self) -> float:
+        """
+        The average driver time spent waiting of the runs in the group
+
+        :return: The average driver time spent waiting
+        """
+        return sum([run.driver_time_spent_waiting for run in self.successful_runs]) / len(self.successful_runs)
+
+    @property
+    def average_vertex_coverage(self) -> float:
+        """
+        The average vertex coverage of the runs in the group
+
+        :return: The average vertex coverage
+        """
+        return sum([run.vertex_coverage for run in self.successful_runs]) / len(self.successful_runs)
+
+    @property
+    def average_edge_coverage(self) -> float:
+        """
+        The average edge coverage of the runs in the group
+
+        :return: The average edge coverage
+        """
+        return sum([run.edge_coverage for run in self.successful_runs]) / len(self.successful_runs)
