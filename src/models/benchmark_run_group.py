@@ -104,3 +104,21 @@ class BenchmarkRunGroup:
         :return: The average edge coverage
         """
         return sum([run.edge_coverage for run in self.successful_runs]) / len(self.successful_runs)
+
+    @property
+    def minimum_test_duration(self) -> float:
+        """
+        The minimum test duration of the runs in the group
+
+        :return: The minimum test duration
+        """
+        return min([run.test_duration for run in self.successful_runs])
+
+    @property
+    def maximum_test_duration(self) -> float:
+        """
+        The maximum test duration of the runs in the group
+
+        :return: The maximum test duration
+        """
+        return max([run.test_duration for run in self.successful_runs])
