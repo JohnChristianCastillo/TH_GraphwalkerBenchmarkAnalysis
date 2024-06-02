@@ -98,7 +98,7 @@ class ReportFactory:
             f.write(f"<p>Model size: {benchmark.report.model.vertices} vertices, {benchmark.report.model.edges} edges</p>\n")
 
             f.write(f"<h2>Path Generators</h2>\n")
-            f.write('<table>\n')
+            f.write('<table border="1">\n')
             f.write('<tr>\n')
             f.write('<th>Generator</th>\n')
             f.write('<th>Stop Conditions</th>\n')
@@ -110,8 +110,11 @@ class ReportFactory:
                 f.write(f'<td>{generator.stop_condition}</td>\n')
                 f.write('</tr>\n')
 
+            f.write('</table>\n')
+
+            f.write('<div style="page-break-after: always;"></div>')
+
             f.write('<h2>Statistics</h2>\n')
-            f.write('<table>\n')
 
             for statistic_name, statistics in statistics.items():
                 f.write(f"<h3>{statistic_name}</h3>\n")
@@ -131,6 +134,32 @@ class ReportFactory:
                         f.write('</tr>\n')
 
                 f.write('</table>\n')
+
+                f.write('<div style="page-break-after: always;"></div>')
+
+                # f.write('<pre>\n')
+                # f.write('<code>\n')
+                #
+                # # LaTeX table
+                #
+                # f.write('\\begin{table}[h]\n')
+                # f.write('\\centering\n')
+                # f.write('\\begin{tabular}{|c|c|c|}\n')
+                # f.write('\\hline\n')
+                # f.write(f'\\textbf{{Coverage}} & \\textbf{{Generator}} & \\textbf{{Value}} \\\\\n')
+                # for generator_name, generator_statistics in statistics.items():
+                #     for stop_coverage, value in generator_statistics.items():
+                #         f.write('\\hline\n')
+                #         f.write(f'{stop_coverage} & {generator_name} & {round(value, 2)} \\\\\n')
+                #
+                # f.write('\\hline\n')
+                # f.write('\\end{tabular}\n')
+                # f.write('\\end{table}\n')
+                #
+                # f.write('</code>\n')
+                # f.write('</pre>\n')
+                #
+                # f.write('<div style="page-break-after: always;"></div>')
 
             f.write('<h2>Plots</h2>\n')
             for name in plots.keys():
