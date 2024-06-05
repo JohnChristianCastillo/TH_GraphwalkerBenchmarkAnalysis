@@ -158,6 +158,8 @@ class BenchmarkPlotter:
 
         grouped_run_groups = {}
         for run_group in benchmark.run_groups_sorted:
+            if run_group.algorithm not in grouped_generators.keys():
+                continue    # Skip algorithms that are not in the grouped_generators
             if run_group.algorithm not in grouped_run_groups:
                 grouped_run_groups[run_group.algorithm] = []
             grouped_run_groups[run_group.algorithm].append(run_group)
