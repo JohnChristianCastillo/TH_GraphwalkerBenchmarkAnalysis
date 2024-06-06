@@ -26,6 +26,18 @@ class BenchmarkStatistics:
                 'max_generation_time_comparison': BenchmarkStatistics.max_generation_time_comparison}
 
     @staticmethod
+    def get_statistics_functions_test_execution() -> dict[
+        str, Callable[[Benchmark, dict[str, list[BenchmarkGenerator]]], dict]]:
+        """
+        Get the available statistics functions for test execution time
+
+        :return: a dictionary with the available statistics functions
+        """
+        return {'average_test_execution_time_comparison': BenchmarkStatistics.average_test_execution_time_comparison,
+                'min_test_execution_time_comparison': BenchmarkStatistics.min_test_execution_time_comparison,
+                'max_test_execution_time_comparison': BenchmarkStatistics.max_test_execution_time_comparison}
+
+    @staticmethod
     def create_statistics(benchmark: Benchmark, grouped_generators: dict[str, list[BenchmarkGenerator]]) -> dict[
         str, dict]:
         """
@@ -39,6 +51,10 @@ class BenchmarkStatistics:
 
         for function_name, statistics_function in BenchmarkStatistics.get_statistics_functions().items():
             statistics[function_name] = statistics_function(grouped_generators)
+
+        if all([run_group.successful_runs for run_group in benchmark.run_groups]):
+            for function_name, statistics_function in BenchmarkStatistics.get_statistics_functions_test_execution().items():
+                statistics[function_name] = statistics_function(benchmark, grouped_generators)
 
         return statistics
 
@@ -157,3 +173,64 @@ class BenchmarkStatistics:
         """
         return BenchmarkStatistics.percentual_comparison(grouped_generators,
                                                          lambda generator: generator.max_generation_time)
+
+    @staticmethod
+    def create_statistics_test_execution(benchmark: Benchmark, grouped_generators: dict[str, list[BenchmarkGenerator]],
+                                         value_lambda: Callable) -> dict:
+        """
+        Create the statistics for a test execution time comparison
+
+        :param benchmark: The benchmark to analyse
+        :param grouped_generators: The generator benchmarks, grouped by generator name, to use as whitelist
+        :param value_lambda: The lambda function to get the value to compare
+        :return: A dictionary with the statistics
+        """
+        grouped_run_groups = {}
+        for run_group in benchmark.run_groups_sorted:
+            if run_group.algorithm not in grouped_generators.keys():
+                continue  # Skip algorithms that are not in the grouped_generators
+            if run_group.algorithm not in grouped_run_groups:
+                grouped_run_groups[run_group.algorithm] = []
+            grouped_run_groups[run_group.algorithm].append(run_group)
+
+        return BenchmarkStatistics.percentual_comparison(grouped_run_groups, value_lambda)
+
+    @staticmethod
+    def average_test_execution_time_comparison(benchmark: Benchmark,
+                                               grouped_generators: dict[str, list[BenchmarkGenerator]]) -> dict:
+        """
+        Calculate the average test execution time comparison for the benchmark in percentage, using the smallest average time as 100%
+
+        :param benchmark: The benchmark to analyse
+        :param grouped_generators: The generator benchmarks, grouped by generator name, to use as whitelist
+        :return: A dictionary with the average test execution time comparison
+        """
+
+        return BenchmarkStatistics.create_statistics_test_execution(benchmark, grouped_generators,
+                                                                    lambda group: group.average_test_duration)
+
+    @staticmethod
+    def min_test_execution_time_comparison(benchmark: Benchmark,
+                                           grouped_generators: dict[str, list[BenchmarkGenerator]]) -> dict:
+        """
+        Calculate the min test execution time comparison for the benchmark in percentage, using the smallest min time as 100%
+
+        :param benchmark: The benchmark to analyse
+        :param grouped_generators: The generator benchmarks, grouped by generator name, to use as whitelist
+        :return: A dictionary with the min test execution time comparison
+        """
+        return BenchmarkStatistics.create_statistics_test_execution(benchmark, grouped_generators,
+                                                                    lambda group: group.minimum_test_duration)
+
+    @staticmethod
+    def max_test_execution_time_comparison(benchmark: Benchmark,
+                                           grouped_generators: dict[str, list[BenchmarkGenerator]]) -> dict:
+        """
+        Calculate the max test execution time comparison for the benchmark in percentage, using the smallest max time as 100%
+
+        :param benchmark: The benchmark to analyse
+        :param grouped_generators: The generator benchmarks, grouped by generator name, to use as whitelist
+        :return: A dictionary with the max test execution time comparison
+        """
+        return BenchmarkStatistics.create_statistics_test_execution(benchmark, grouped_generators,
+                                                                    lambda group: group.maximum_test_duration)
